@@ -15,7 +15,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <encoding>UTF-8</encoding>
         <scala.version>2.11.6</scala.version>
-        <spark.version>1.4.0</spark.version>
+        <spark.version>1.5.2</spark.version>
     </properties>
 
 
@@ -55,6 +55,13 @@
             <version>${scala.version}</version>
         </dependency>
 
+        <!-- Kafka dependency-->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
         <!--drools -->
         <dependency>
             <groupId>org.kie</groupId>
@@ -76,6 +83,13 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>knowledge-api</artifactId>
+        </dependency>
+
+        <!-- Time helper-->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.3</version>
         </dependency>
 
     </dependencies>
