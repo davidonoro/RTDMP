@@ -16,24 +16,28 @@ object RTDMP {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setMaster("local[2]").setAppName("RTDMP")
-    val ssc = new StreamingContext(sparkConf, Seconds(20))
+    val ssc = new StreamingContext(sparkConf, Seconds(5))
 
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> BROKER)
 
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,kafkaParams,Set(TOPIC))
     val rulesExecutor = new RulesExecutor("/home/david/PEBD/data/ReglasTest.xlsx")
+    val jedisMngr = new JedisManager
 
     messages.foreachRDD(rdd => {
       rdd.map(msg => msg._2).foreach(text =>{
         val navData = NavigationDataExtractor.parseData(text)
-        println("User: "+navData.getUser)
-        println("url: "+navData.getUrl)
-        println("Fecha: "+navData.getFecha)
-        println("Pais: "+navData.getPais)
-        println("Categorias Antes: "+navData.getCategorias)
-        val evalData = rulesExecutor.evaluarReglas(navData)
-        println("Categorias Despues: "+evalData.getCategorias)
+        if (navData.getUser != null && navData.getUrl !=null){
+          println("User: "+navData.getUser)
+          println("Url: "+navData.getUrl)
+          println("Fecha: "+navData.getFecha)
+          println("Pais: "+navData.getPais)
+          println("Categorias Antes: "+navData.printCategorias)
+          val evalData = rulesExecutor.evaluarReglas(navData)
+          println("Categorias Despues: "+evalData.printCategorias)
+          jedisMngr.insertData(evalData)
+        }
       })
     })
 

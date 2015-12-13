@@ -6,7 +6,7 @@ package com.pebd.rtdmp
 class RulesExecutor(rulesFile:String) extends Serializable{
 
   def evaluarReglas(data:Navigation):Navigation={
-    val ksession = KieSessionFactory.getNewKieSession(rulesFile)
+    val ksession = KieSessionFactory.getKieSession(rulesFile)
     //val list = List(String)
     //ksession.setGlobal("list",list)
     ksession.execute(data)

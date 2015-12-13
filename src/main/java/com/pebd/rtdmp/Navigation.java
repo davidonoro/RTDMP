@@ -15,6 +15,8 @@ public class Navigation {
     private String url;
     private List<String> categorias;
 
+    public Navigation(){}
+
     public Navigation(String user, String pais, String fecha, String url){
         this.user = user;
         this.pais = pais;
@@ -29,8 +31,12 @@ public class Navigation {
         }
     }
 
-    public String getCategorias(){
+    public String printCategorias(){
         return categorias.toString();
+    }
+
+    public List<String> getCategorias() {
+        return categorias;
     }
 
     public String getUser() {
