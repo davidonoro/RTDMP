@@ -29,6 +29,10 @@ public class Navigation {
         }
     }
 
+    public String getCategorias(){
+        return categorias.toString();
+    }
+
     public String getUser() {
         return user;
     }

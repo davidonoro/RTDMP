@@ -22,6 +22,8 @@ object RTDMP {
     val kafkaParams = Map[String, String]("metadata.broker.list" -> BROKER)
 
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,kafkaParams,Set(TOPIC))
+    val rulesExecutor = new RulesExecutor("/home/david/PEBD/data/ReglasTest.xlsx")
+
     messages.foreachRDD(rdd => {
       rdd.map(msg => msg._2).foreach(text =>{
         val navData = NavigationDataExtractor.parseData(text)
@@ -29,6 +31,9 @@ object RTDMP {
         println("url: "+navData.getUrl)
         println("Fecha: "+navData.getFecha)
         println("Pais: "+navData.getPais)
+        println("Categorias Antes: "+navData.getCategorias)
+        val evalData = rulesExecutor.evaluarReglas(navData)
+        println("Categorias Despues: "+evalData.getCategorias)
       })
     })
 
