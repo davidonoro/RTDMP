@@ -1,27 +1,32 @@
 package com.pebd.rtdmp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by david on 10/12/15.
  */
-public class Navigation {
+public class Navigation implements Serializable{
 
 
     private String user;
     private String pais;
     private String fecha;
     private String url;
+    private String dominio;
     private List<String> categorias;
 
-    public Navigation(){}
+    public Navigation(){
+        categorias = new ArrayList<String>();
+    }
 
-    public Navigation(String user, String pais, String fecha, String url){
+    public Navigation(String user, String pais, String fecha, String dominio,String url){
         this.user = user;
         this.pais = pais;
         this.fecha = fecha;
         this.url = url;
+        this.dominio = dominio;
         categorias = new ArrayList<String>();
     }
 
@@ -69,5 +74,13 @@ public class Navigation {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDominio() {
+        return dominio;
+    }
+
+    public void setDominio(String dominio) {
+        this.dominio = dominio;
     }
 }

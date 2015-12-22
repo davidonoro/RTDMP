@@ -14,31 +14,24 @@ object RTDMP {
   final var BROKER = "localhost:9092"
   final var TOPIC = "TOPICO.TEST.PUBLICADOR"
 
-  def main(args: Array[String]) {
-    val sparkConf = new SparkConf().setMaster("local[2]").setAppName("RTDMP")
-    val ssc = new StreamingContext(sparkConf, Seconds(5))
-
+  def main(args: Array[String]): Unit = {
+    val sparkConf = new SparkConf().setMaster("local[3]").setAppName("RTDMP")
+    val ssc = new StreamingContext(sparkConf, Seconds(5));
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> BROKER)
-
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,kafkaParams,Set(TOPIC))
-    val rulesExecutor = new RulesExecutor("/home/david/PEBD/data/ReglasTest.xlsx")
-    val jedisMngr = new JedisManager
 
     messages.foreachRDD(rdd => {
-      rdd.map(msg => msg._2).foreach(text =>{
-        val navData = NavigationDataExtractor.parseData(text)
-        if (navData.getUser != null && navData.getUrl !=null){
-          println("User: "+navData.getUser)
-          println("Url: "+navData.getUrl)
-          println("Fecha: "+navData.getFecha)
-          println("Pais: "+navData.getPais)
-          println("Categorias Antes: "+navData.printCategorias)
-          val evalData = rulesExecutor.evaluarReglas(navData)
-          println("Categorias Despues: "+evalData.printCategorias)
-          jedisMngr.insertData(evalData)
-        }
+      val rulesExecutor = new RulesExecutor("/home/david/PEBD/data/ReglasTest.xlsx")
+
+      val navList = rdd.mapPartitions(listMsg=>{
+        val navs = NavigationDataExtractor.parseMultipleData(listMsg)
+        val evalNavs = rulesExecutor.evaluarMultipleReglas(navs)
+        evalNavs
       })
+      val jedisManager = new JedisManager
+      val navFilteredList = navList.filter(nav=> nav.getUser != null && !nav.getCategorias.isEmpty)
+      jedisManager.insertMultipleData(navFilteredList.collect())
     })
 
     ssc.start()

@@ -26,8 +26,6 @@ public class KieSessionFactory implements Serializable{
         File newFile = new File(filename);
         boolean fileHasChanged = (rulesFile == null || rulesFile.lastModified() != newFile.lastModified());
 
-        System.out.println("filehaschanged="+fileHasChanged);
-
         // Crea una nueva sesion si no existe o el fichero de reglas ha cambiado
         if (statelessKieSession == null || fileHasChanged) {
             rulesFile = new File(filename);

@@ -56,14 +56,33 @@ object NavigationDataExtractor {
     val parsedJson = parse(json)
     try{
       val doc = parsedJson.extract[event]
-      val data = new Navigation(doc.UUIDC,doc.pais_iso2,timeToStr(doc.fecha),doc.url)
+      val data = new Navigation(doc.UUIDC,doc.pais_iso2,timeToStr(doc.fecha),doc.dominio,doc.url)
       data
     } catch{
-        case mpe:MappingException => println("Error parseando doc: "+mpe.msg)
-        val data = new Navigation()
-        data
+        case mpe:MappingException => {
+         // println("Error parseando doc: " + mpe.msg)
+          val data = new Navigation()
+          data
+        }
     }
+  }
 
+  def parseMultipleData(jsonList: Iterator[(String,String)]): Iterator[Navigation]={
+    val navigations = jsonList.map(kfkMsg=>{
+      val parsedJson = parse(kfkMsg._2)
+      try{
+        val doc = parsedJson.extract[event]
+        val data = new Navigation(doc.UUIDC,doc.pais_iso2,timeToStr(doc.fecha),doc.dominio,doc.url)
+        data
+      } catch{
+        case mpe:MappingException => {
+          // println("Error parseando doc: " + mpe.msg)
+          val data = new Navigation()
+          data
+        }
+      }
+    })
+    navigations
   }
 
   def timeToStr(epochMillis: String): String =  {

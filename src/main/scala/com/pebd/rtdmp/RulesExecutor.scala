@@ -12,4 +12,19 @@ class RulesExecutor(rulesFile:String) extends Serializable{
     ksession.execute(data)
     data
   }
+
+  def evaluarMultipleReglas(data:Iterator[Navigation]):Iterator[Navigation]={
+    val ksession = KieSessionFactory.getKieSession(rulesFile)
+
+    val reglasEvaluadas = data.map(navigation=>{
+
+      if(navigation.getDominio!=null){
+        ksession.execute(navigation)
+        navigation
+      }else{
+        new Navigation()
+      }
+    })
+    reglasEvaluadas
+  }
 }
