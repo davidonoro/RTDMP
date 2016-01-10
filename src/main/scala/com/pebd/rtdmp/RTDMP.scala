@@ -2,6 +2,7 @@ package com.pebd.rtdmp
 
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
+import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
@@ -15,14 +16,15 @@ object RTDMP {
   //final var BROKER = "localhost:9092"
   final var TOPIC = "TOPICO.TEST.PUBLICADOR"
 
-  final var HEAVYHITTERS = 5
-
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf().setMaster("local[8]").setAppName("RTDMP")
-    val ssc = new StreamingContext(sparkConf, Seconds(1));
+    val ssc = new StreamingContext(sparkConf, Seconds(5));
 
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> BROKER)
+
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> BROKER, "auto.offset.reset"->"largest")
+    val topics = Map[String,Integer](TOPIC->8)
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,kafkaParams,Set(TOPIC))
+
 
     //val heavyHitters = collection.mutable.Map[String,Long]()
 

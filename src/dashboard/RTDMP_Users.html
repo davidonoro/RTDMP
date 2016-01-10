@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real Time Data Management Platform Metrics</title>
+    <style>
+
+        #cabecera{
+            margin: 5px;
+        }
+        #data{
+            margin-top: 35px;
+            margin-right: 80px;
+        }
+
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="vendor/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="country_aux.js"></script>
+    <!--bootstap-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap-theme.min.css">
+    <script type="text/javascript" src="vendor/bootstrap.min.js"></script>
+
+    <div id="cabecera" class="page-header">
+        <h1>Datos de usuarios
+            <small> Total de urls visitadas: <span id="totales"></span></small>
+        </h1>
+        <p class="text-justify" style="margin-right: 100px;">Este dashboard sirve para ilustrar el caso básico de uso del Data Management Platform, en el que se consulta por los datos de un usuario en concreto. Como ayuda se presentan unas tablas con los usuarios mas activos</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <table id="tablaUsuarios" class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User ID</th>
+                    <th>Hits</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            </table>
+        </div>
+        <div class="col-md-6"></div>
+            <pre id="data"></pre>
+        </div>
+    </div>
+
+    <script>
+
+        $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
+            $("#totales").html(json.GET);
+        });
+
+        pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/9/WITHSCORES");
+
+        function pintarTabla(url){
+            $.getJSON(url, function(json){
+                var resultados = json.ZREVRANGE;
+                       
+                for (var i=0; i < resultados.length; i=i+2) {
+                    (function(i){
+                        console.log(i);
+                        var pos = 1;
+                        if(i>=1){
+                            pos = 1 +i/2;
+                        }
+                        var user = resultados[i];
+                        var hits = resultados[i+1];
+                        var fila = $("<tr id=\"fila\"><td>"+pos+"</td><td>"+user+"</td><td>"+hits+"</td></tr>").click(function(){
+                            pintarDatosUsuario(user);
+                        });
+                        $("#tablaUsuarios tbody").append(fila);
+                    })(i);
+                };
+            });
+        }
+
+        function pintarDatosUsuario(usuario){
+            $("#data").html("");
+            $.getJSON("http://127.0.0.1:7379/hgetall/"+usuario,function(json){
+                var data = json.hgetall;
+                $("#data").append("USER"+" ==> "+data["USER"]+"\n");
+                $("#data").append("TOTALHITS"+" ==> "+data["TOTALHITS"]+"\n");
+                $("#data").append("COUNTRY"+" ==> "+data["COUNTRY"]+"\n");
+                $("#data").append("LAST_UPDATE"+" ==> "+data["LAST_UPDATE"]+"\n");
+                $("#data").append("\n");
+                $("#data").append("CATEGORIA\tHITS\tLASTUPDATE"+"\n");
+                for(var key in data){
+                    if(key.indexOf("CAT_")>-1){
+                        var cat = key.substr(4);
+                        
+                        // cosmetica
+                        var printCat = cat;
+                        if(cat.length<8){
+                            printCat = cat+"      ";
+                        }
+                        if(cat.length>16){
+                            printCat = cat.substr(0,12);
+                        }
+
+                        $("#data").append(printCat+"\t"+data[key]+"\t"+data["LAST-UPDATE_"+cat]+"\n");
+                    }
+                }
+            });
+        }
+        
+    </script>
+</body>
+</html>

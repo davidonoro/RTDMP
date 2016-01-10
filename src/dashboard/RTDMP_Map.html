@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real Time Data Management Platform Metrics</title>
+    <style>
+
+        #cabecera{
+            margin: 5px;
+        }
+
+        #container{
+            float:left;
+            margin: 10px;
+            padding-left: 50px;
+            }
+        #aside{
+            float:right;
+            margin: 10px;
+        }
+        #btnReset{
+            float: right;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="vendor/d3.v3.min.js"></script>
+    <script type="text/javascript" src="vendor/topojson.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery-1.10.2.js"></script>
+    <script src="datamaps.world.min.js"></script>
+    <script type="text/javascript" src="country_aux.js"></script>
+    <!--bootstap-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap-theme.min.css">
+    <script type="text/javascript" src="vendor/bootstrap.min.js"></script>
+    
+    <div id="miCabecera"></div>
+    <div id="cabecera" class="page-header">
+        <h1>Datos geográficos
+            <small> Total de urls visitadas: <span id="totales"></span></small>
+            <button id="btnReset" class="btn btn-primary">Reset</button>
+        </h1>
+        <p class="text-justify" style="margin-right: 100px;">Este mapa coroplético permite hacer una comparacion del porcentaje que supone cada categoría en el
+        total de navegaciones realizadas desde cada país. Inicialmente se muestran las navegaciones totales realizadas desde cada ubicación, lo cuál no aporta información relevante al proceder la mayoría de los datos de muy pocas localizaciones. Utilizando los botones, se pueden obtener conclusiones más relevantes, en las que se compara qué porcentaje de las navegaciones totales supone cada una de las categorías.Solamente aquellos países de los que se dispone información muestran datos en el mapa.</p>
+    </div>
+    
+    <div id="container" style="position: relative; width: 800px; height:550px;"></div>
+    <div id="aside" class="btn-group-vertical btn-group-sm" style="position: relative; width: 400px; height:500px;"></div>
+
+    <script>
+
+    var series;
+    var miMapa;
+
+        $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
+            $("#totales").html(json.GET);
+        });
+
+        $("#btnReset").click(function(){
+            actualizarDatosTotales(pintarMapa);
+        });
+        
+        $.getJSON("http://127.0.0.1:7379/keys/TOTALCAT_COUNTRY_*", function(json){
+            var categorias = json.keys;
+            categorias.forEach(function(categoria){
+                var boton = $("<button type=\"button\" class=\"btn btn-default\">"+categoria.substr(17)+"</button>").click(function(){
+                        recalcularMapa(categoria);
+                    });
+                $("div#aside").append(boton);
+            });
+        });
+
+
+        function recalcularMapa(clavePeticion){
+            $.getJSON("http://127.0.0.1:7379/hgetall/"+clavePeticion, function(json){
+                actualizarDatosTotales(function(dataset,datasetAlfa2){
+                    series = [];
+
+                    for (var key in datasetAlfa2){
+                        if (datasetAlfa2.hasOwnProperty(key)){
+                            for (var pais in country_aux){
+                                if (key == pais){
+                                    var paisAlfa3 =  country_aux[pais][0];
+                                    var valor = 0;
+                                    if( pais in json.hgetall){
+                                        console.log(pais,paisAlfa3);
+                                        var valorCat = json.hgetall[pais];
+                                        valor = ((valorCat/datasetAlfa2[pais])*100).toFixed(2);
+                                    }
+                                    series.push([paisAlfa3,valor]);
+                                }
+                            }
+                        }
+                    }
+                pintarMapa(series);
+            });
+            });        
+        }
+
+
+        
+        actualizarDatosTotales(pintarMapa);
+
+        function actualizarDatosTotales(callback){
+             $.getJSON("http://127.0.0.1:7379/hgetall/TOTALHITS_COUNTRY", function(json){
+            series = [];
+            //var dict = eval(json.hgetall);
+            for (var key in json.hgetall){
+                if (json.hgetall.hasOwnProperty(key)){
+                    for (var pais in country_aux){
+                        if (key == pais){
+                            series.push([country_aux[pais][0],parseInt(json.hgetall[key])]);
+                        }
+                    }
+                }
+            }
+           callback(series,json.hgetall);
+        });
+        }
+        
+
+        function pintarMapa(series){
+
+            $("#container").html("");
+
+            var dataset = {};
+
+
+            //var onlyValues = series.map(function(obj){ return obj[1]; });
+            var minValue = d3.min(series,function(d){return d[1]});
+            var maxValue = d3.max(series,function(d){return d[1]});
+
+            var paletteScale = d3.scale.quantize()
+                .domain([minValue,maxValue])
+                .range(["#f1eef6","#bdc9e1","#74a9cf","#2b8cbe","#045a8d"]);
+
+            series.forEach(function(item){ //
+            // item example value ["USA", 70]
+                var iso = item[0];
+                var value = item[1];
+                dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
+            });
+
+            miMapa = new Datamap({
+            element: document.getElementById('container'),
+            projection: 'mercator', // big world map
+            // countries don't listed in dataset will be painted with this color
+            fills: { defaultFill: '#F5F5F5' },
+            data: dataset,
+            geographyConfig: {
+                borderColor: '#DEDEDE',
+                highlightBorderWidth: 2,
+                // don't change color on mouse hover
+                highlightFillColor: function(geo) {
+                    return geo['fillColor'] || '#F5F5F5';
+                },
+                // only change border
+                highlightBorderColor: '#B7B7B7',
+                // show desired information in tooltip
+                popupTemplate: function(geo, data) {
+                    // don't show tooltip if country don't present in dataset
+                    if (!data) { return ; }
+                    // tooltip content
+                    return ['<div class="hoverinfo">',
+                        '<strong>', geo.properties.name, '</strong>',
+                        '<br>Valor: <strong>', data.numberOfThings, '</strong>',
+                        '</div>'].join('');
+                }
+            }
+            });
+            miMapa.legend();
+        }
+
+        
+    </script>
+</body>
+</html>

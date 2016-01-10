@@ -23,14 +23,14 @@ public class JedisManager implements Serializable{
             // Estadisticas totales
             cluster.incrBy("TOTALHITS",1);
             if(data.getPais() != ""){
-                cluster.incrBy("TOTALHITS_"+data.getPais(),1);
+                cluster.hincrBy("TOTALHITS_COUNTRY",data.getPais(),1);
             }
 
 
             if(nuevoUsuario){
                 cluster.incrBy("TOTALUNIQUE",1);
                 if(data.getPais() != "") {
-                    cluster.incrBy("TOTALUNIQUE_" + data.getPais(), 1);
+                    cluster.hincrBy("TOTALUNIQUE_COUNTRY",data.getPais(), 1);
                 }
             }
 
@@ -55,7 +55,7 @@ public class JedisManager implements Serializable{
 
                 cluster.incrBy("TOTALCAT_"+categoria.toUpperCase(),1);
                 if(data.getPais() != "") {
-                    cluster.incrBy("TOTALCAT_" + categoria.toUpperCase() + "_" + data.getPais(), 1);
+                    cluster.hincrBy("TOTALCAT_COUNTRY_" + categoria.toUpperCase(),data.getPais(), 1);
                 }
 
                 long totalCatHits = cluster.hincrBy(data.getUser(),"CAT_"+categoria.toUpperCase(),1);
