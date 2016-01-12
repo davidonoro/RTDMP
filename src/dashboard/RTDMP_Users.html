@@ -13,6 +13,15 @@
             margin-right: 80px;
         }
 
+        #fila:hover{
+            cursor:pointer;
+        }
+
+        #btnTotal{
+            float: right;
+            margin: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -26,12 +35,38 @@
     <div id="cabecera" class="page-header">
         <h1>Datos de usuarios
             <small> Total de urls visitadas: <span id="totales"></span></small>
+            <button id="btnTotal" class="btn btn-primary">TOTAL</button>
         </h1>
-        <p class="text-justify" style="margin-right: 100px;">Este dashboard sirve para ilustrar el caso básico de uso del Data Management Platform, en el que se consulta por los datos de un usuario en concreto. Como ayuda se presentan unas tablas con los usuarios mas activos</p>
+        <p class="text-justify" style="margin-right: 100px;">Este dashboard sirve para ilustrar el caso básico de uso del Data Management Platform, en el que una aplicación cliente consulta  en tiempo real  los datos de navegación de un usuario concreto. La aplicación muestra el id único de usuario, el país de procedencia, fecha de actualización y número total de hits. Además se muestra, en cada categoría en la que un usuario se ha interesado, el número de ocurrencias y la última fecha de actualización.</p>
+        <p class="text-justify" style="margin-right: 100px;">Como ayuda se presentan unas tablas con los usuarios mas activos (heavy hitters), tanto en global, como en cada una de las categorías que se han identificado al evaluar los dominios visitados. Al seleccionar cada uno de los usuarios, el dashboard muestra los datos recopilados hasta el momento para dicho usuario</p>
     </div>
     
+       
+        
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-2">
+            <div class="btn-group-vertical btn-group-xs" role="group" style="margin-left:10px">
+                <button id="BANCA" type="button" class="btn btn-primary">BANCA</button>
+                <button id="PISOS" type="button" class="btn btn-primary">PISOS</button>
+                <button id="DEPORTES" type="button" class="btn btn-primary">DEPORTES</button>
+                <button id="EMPLEO" type="button" class="btn btn-primary">EMPLEO</button>
+                <button id="APUESTAS" id="" type="button" class="btn btn-primary">APUESTAS</button>
+                <button id="MOTOR" type="button" class="btn btn-primary">MOTOR</button>
+                <button id="ADMINISTRACION_PUBLICA" type="button" class="btn btn-primary">ADMINISTRACION_PUBLICA</button>
+                <button id="PORNOGRAFIA" type="button" class="btn btn-primary">PORNOGRAFIA</button>
+                <button id="EMAIL" type="button" class="btn btn-primary">EMAIL</button>
+                <button id="REDES_SOCIALES" type="button" class="btn btn-primary">REDES_SOCIALES</button>
+                <button id="PRENSA" type="button" class="btn btn-primary">PRENSA</button>
+                <button id="MUSICA" type="button" class="btn btn-primary">MUSICA</button>
+                <button id="JUEGOS_ONLINE" type="button" class="btn btn-primary">JUEGOS_ONLINE</button>
+                <button id="PELICULAS_SERIES" type="button" class="btn btn-primary">PELICULAS_SERIES</button>
+                <button id="COMPRAS" type="button" class="btn btn-primary">COMPRAS</button>
+                <button id="INFANTIL" type="button" class="btn btn-primary">INFANTIL</button>
+                <button id="VIAJES" type="button" class="btn btn-primary">VIAJES</button>
+                <button id="TECNOLOGIA" type="button" class="btn btn-primary">TECNOLOGIA</button>
+            </div> 
+        </div>
+        <div class="col-md-5">
             <table id="tablaUsuarios" class="table table-hover">
             <thead>
                 <tr>
@@ -44,20 +79,96 @@
             </tbody>
             </table>
         </div>
-        <div class="col-md-6"></div>
+        <div class="col-md-5"></div>
             <pre id="data"></pre>
         </div>
     </div>
 
     <script>
 
-        $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
-            $("#totales").html(json.GET);
-        });
-
+        pintarTotales();
         pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/9/WITHSCORES");
 
+        // Logica de los botones
+        $("#btnTotal").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/9/WITHSCORES");
+        });
+        $("#BANCA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_BANCA/0/9/WITHSCORES");
+        });
+        $("#PISOS").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PISOS/0/9/WITHSCORES");
+        });
+        $("#DEPORTES").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_DEPORTES/0/9/WITHSCORES");
+        });
+        $("#EMPLEO").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_EMPLEO/0/9/WITHSCORES");
+        });
+        $("#APUESTAS").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_APUESTAS/0/9/WITHSCORES");
+        });
+        $("#MOTOR").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_MOTOR/0/9/WITHSCORES");
+        });
+        $("#ADMINISTRACION_PUBLICA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_ADMINISTRACION_PUBLICA/0/9/WITHSCORES");
+        });
+        $("#PORNOGRAFIA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PORNOGRAFIA/0/9/WITHSCORES");
+        });
+        $("#EMAIL").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_EMAIL/0/9/WITHSCORES");
+        });
+        $("#REDES_SOCIALES").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_REDES_SOCIALES/0/9/WITHSCORES");
+        });
+        $("#PRENSA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PRENSA/0/9/WITHSCORES");
+        });
+        $("#MUSICA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_MUSICA/0/9/WITHSCORES");
+        });
+        $("#JUEGOS_ONLINE").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_JUEGOS_ONLINE/0/9/WITHSCORES");
+        });
+        $("#PELICULAS_SERIES").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_BANCA/0/9/WITHSCORES");
+        });
+        $("#COMPRAS").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PELICULAS_SERIES/0/9/WITHSCORES");
+        });
+        $("#INFANTIL").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_INFANTIL/0/9/WITHSCORES");
+        });
+        $("#VIAJES").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_VIAJES/0/9/WITHSCORES");
+        });
+        $("#TECNOLOGIA").click(function(){
+            pintarTotales();
+            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_TECNOLOGIA/0/9/WITHSCORES");
+        });
+
         function pintarTabla(url){
+            $("#tablaUsuarios tbody").html("");
             $.getJSON(url, function(json){
                 var resultados = json.ZREVRANGE;
                        
@@ -98,13 +209,19 @@
                         if(cat.length<8){
                             printCat = cat+"      ";
                         }
-                        if(cat.length>16){
+                        if(cat.length>15){
                             printCat = cat.substr(0,12);
                         }
 
                         $("#data").append(printCat+"\t"+data[key]+"\t"+data["LAST-UPDATE_"+cat]+"\n");
                     }
                 }
+            });
+        }
+
+        function pintarTotales(){
+            $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
+                $("#totales").html(json.GET);
             });
         }
         

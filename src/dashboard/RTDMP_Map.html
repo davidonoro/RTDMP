@@ -39,7 +39,7 @@
     <div id="cabecera" class="page-header">
         <h1>Datos geográficos
             <small> Total de urls visitadas: <span id="totales"></span></small>
-            <button id="btnReset" class="btn btn-primary">Reset</button>
+            <button id="btnReset" class="btn btn-primary">RESET</button>
         </h1>
         <p class="text-justify" style="margin-right: 100px;">Este mapa coroplético permite hacer una comparacion del porcentaje que supone cada categoría en el
         total de navegaciones realizadas desde cada país. Inicialmente se muestran las navegaciones totales realizadas desde cada ubicación, lo cuál no aporta información relevante al proceder la mayoría de los datos de muy pocas localizaciones. Utilizando los botones, se pueden obtener conclusiones más relevantes, en las que se compara qué porcentaje de las navegaciones totales supone cada una de las categorías.Solamente aquellos países de los que se dispone información muestran datos en el mapa.</p>
@@ -64,7 +64,7 @@
         $.getJSON("http://127.0.0.1:7379/keys/TOTALCAT_COUNTRY_*", function(json){
             var categorias = json.keys;
             categorias.forEach(function(categoria){
-                var boton = $("<button type=\"button\" class=\"btn btn-default\">"+categoria.substr(17)+"</button>").click(function(){
+                var boton = $("<button type=\"button\" class=\"btn btn-primary\">"+categoria.substr(17)+"</button>").click(function(){
                         recalcularMapa(categoria);
                     });
                 $("div#aside").append(boton);

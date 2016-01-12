@@ -61,11 +61,11 @@ public class JedisManager implements Serializable{
                 long totalCatHits = cluster.hincrBy(data.getUser(),"CAT_"+categoria.toUpperCase(),1);
                 cluster.hset(data.getUser(),"LAST-UPDATE_"+categoria.toUpperCase(),data.getFecha());
 
-                cluster.zadd("HEAVYHITTERS_"+categoria.toUpperCase(),totalHits,data.getUser());
+                cluster.zadd("HEAVYHITTERS_"+categoria.toUpperCase(),totalCatHits,data.getUser());
                 cluster.zremrangeByRank("HEAVYHITTERS_"+categoria.toUpperCase(),0,TOPKHITTERS);
 
                 if(data.getPais() != "") {
-                    cluster.zadd("HEAVYHITTERS_" + categoria.toUpperCase() + "_" + data.getPais(), totalHits, data.getUser());
+                    cluster.zadd("HEAVYHITTERS_" + categoria.toUpperCase() + "_" + data.getPais(), totalCatHits, data.getUser());
                     cluster.zremrangeByRank("HEAVYHITTERS_" + categoria.toUpperCase() + "_" + data.getPais(), 0, TOPKHITTERS);
                 }
             }
