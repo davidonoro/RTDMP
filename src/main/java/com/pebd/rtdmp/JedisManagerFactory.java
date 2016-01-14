@@ -17,7 +17,6 @@ public class JedisManagerFactory implements Serializable{
 
     static JedisPool pool = new JedisPool(new JedisPoolConfig(),HOST);
 
-
     public static Jedis getJedisCluster(){
         return pool.getResource();
     }

@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <title>Real Time Data Management Platform Metrics</title>
     <style>
-
         #cabecera{
             margin: 5px;
         }
-
         #container{
             float:left;
             margin: 10px;
@@ -45,20 +43,23 @@
         total de navegaciones realizadas desde cada país. Inicialmente se muestran las navegaciones totales realizadas desde cada ubicación, lo cuál no aporta información relevante al proceder la mayoría de los datos de muy pocas localizaciones. Utilizando los botones, se pueden obtener conclusiones más relevantes, en las que se compara qué porcentaje de las navegaciones totales supone cada una de las categorías.Solamente aquellos países de los que se dispone información muestran datos en el mapa.</p>
     </div>
     
+    <div class="row">
+        <div class="col-md-12">
+            <h4 id="tituloDatos" style="text-align: center;">Navegaciones totales<h4>
+        </div>
+    </div>
     <div id="container" style="position: relative; width: 800px; height:550px;"></div>
     <div id="aside" class="btn-group-vertical btn-group-sm" style="position: relative; width: 400px; height:500px;"></div>
 
     <script>
-
     var series;
     var miMapa;
-
         $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
             $("#totales").html(json.GET);
         });
-
         $("#btnReset").click(function(){
             actualizarDatosTotales(pintarMapa);
+            cambiarTitulo("Navegaciones totales");
         });
         
         $.getJSON("http://127.0.0.1:7379/keys/TOTALCAT_COUNTRY_*", function(json){
@@ -66,17 +67,15 @@
             categorias.forEach(function(categoria){
                 var boton = $("<button type=\"button\" class=\"btn btn-primary\">"+categoria.substr(17)+"</button>").click(function(){
                         recalcularMapa(categoria);
+                        cambiarTitulo("Comparativa "+categoria.substr(17));
                     });
                 $("div#aside").append(boton);
             });
         });
-
-
         function recalcularMapa(clavePeticion){
             $.getJSON("http://127.0.0.1:7379/hgetall/"+clavePeticion, function(json){
                 actualizarDatosTotales(function(dataset,datasetAlfa2){
                     series = [];
-
                     for (var key in datasetAlfa2){
                         if (datasetAlfa2.hasOwnProperty(key)){
                             for (var pais in country_aux){
@@ -97,11 +96,8 @@
             });
             });        
         }
-
-
         
         actualizarDatosTotales(pintarMapa);
-
         function actualizarDatosTotales(callback){
              $.getJSON("http://127.0.0.1:7379/hgetall/TOTALHITS_COUNTRY", function(json){
             series = [];
@@ -119,29 +115,21 @@
         });
         }
         
-
         function pintarMapa(series){
-
             $("#container").html("");
-
             var dataset = {};
-
-
             //var onlyValues = series.map(function(obj){ return obj[1]; });
             var minValue = d3.min(series,function(d){return d[1]});
             var maxValue = d3.max(series,function(d){return d[1]});
-
             var paletteScale = d3.scale.quantize()
                 .domain([minValue,maxValue])
                 .range(["#f1eef6","#bdc9e1","#74a9cf","#2b8cbe","#045a8d"]);
-
             series.forEach(function(item){ //
             // item example value ["USA", 70]
                 var iso = item[0];
                 var value = item[1];
                 dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
             });
-
             miMapa = new Datamap({
             element: document.getElementById('container'),
             projection: 'mercator', // big world map
@@ -169,10 +157,13 @@
                 }
             }
             });
-            miMapa.legend();
         }
 
+        function cambiarTitulo(titulo){
+            $("#tituloDatos").html(titulo);
+        }
         
     </script>
 </body>
 </html>
+

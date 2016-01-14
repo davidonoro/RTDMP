@@ -76,7 +76,6 @@ object NavigationDataExtractor {
         data
       } catch{
         case mpe:MappingException => {
-          // println("Error parseando doc: " + mpe.msg)
           val data = new Navigation()
           data
         }

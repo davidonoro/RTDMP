@@ -42,28 +42,16 @@
     </div>
     
        
-        
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-5">
+            <h4 id="tituloDatos" style="text-align: center;">Top 10 hitters totales</h4>
+        </div>
+        <div class="col-md-5"></div>
+    </div>  
     <div class="row">
         <div class="col-md-2">
-            <div class="btn-group-vertical btn-group-xs" role="group" style="margin-left:10px">
-                <button id="BANCA" type="button" class="btn btn-primary">BANCA</button>
-                <button id="PISOS" type="button" class="btn btn-primary">PISOS</button>
-                <button id="DEPORTES" type="button" class="btn btn-primary">DEPORTES</button>
-                <button id="EMPLEO" type="button" class="btn btn-primary">EMPLEO</button>
-                <button id="APUESTAS" id="" type="button" class="btn btn-primary">APUESTAS</button>
-                <button id="MOTOR" type="button" class="btn btn-primary">MOTOR</button>
-                <button id="ADMINISTRACION_PUBLICA" type="button" class="btn btn-primary">ADMINISTRACION_PUBLICA</button>
-                <button id="PORNOGRAFIA" type="button" class="btn btn-primary">PORNOGRAFIA</button>
-                <button id="EMAIL" type="button" class="btn btn-primary">EMAIL</button>
-                <button id="REDES_SOCIALES" type="button" class="btn btn-primary">REDES_SOCIALES</button>
-                <button id="PRENSA" type="button" class="btn btn-primary">PRENSA</button>
-                <button id="MUSICA" type="button" class="btn btn-primary">MUSICA</button>
-                <button id="JUEGOS_ONLINE" type="button" class="btn btn-primary">JUEGOS_ONLINE</button>
-                <button id="PELICULAS_SERIES" type="button" class="btn btn-primary">PELICULAS_SERIES</button>
-                <button id="COMPRAS" type="button" class="btn btn-primary">COMPRAS</button>
-                <button id="INFANTIL" type="button" class="btn btn-primary">INFANTIL</button>
-                <button id="VIAJES" type="button" class="btn btn-primary">VIAJES</button>
-                <button id="TECNOLOGIA" type="button" class="btn btn-primary">TECNOLOGIA</button>
+            <div id="botonera" class="btn-group-vertical btn-group-xs" role="group" style="margin-left:10px">
             </div> 
         </div>
         <div class="col-md-5">
@@ -80,6 +68,12 @@
             </table>
         </div>
         <div class="col-md-5"></div>
+            <div class="input-group">
+                <input id="textoABuscar" type="text" class="form-control" placeholder="id usuario...">
+                  <span class="input-group-btn">
+                    <button id="btnBusqueda" class="btn btn-primary" type="button" style="margin-right:80px;">Buscar</button>
+                  </span>
+            </div><!-- /input-group -->
             <pre id="data"></pre>
         </div>
     </div>
@@ -88,83 +82,35 @@
 
         pintarTotales();
         pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/9/WITHSCORES");
+        $.getJSON("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/0",function(json){
+            var usuario = json.ZREVRANGE[0];
+            pintarDatosUsuario(usuario);
+        });
 
         // Logica de los botones
         $("#btnTotal").click(function(){
             pintarTotales();
             pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS/0/9/WITHSCORES");
+            cambiarTitulo("TOTALES");
         });
-        $("#BANCA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_BANCA/0/9/WITHSCORES");
+
+        $.getJSON("http://127.0.0.1:7379/keys/TOTALCAT_COUNTRY_*", function(json){
+            var categorias = json.keys;
+            categorias.forEach(function(categoria){
+                var boton = $("<button type=\"button\" class=\"btn btn-primary\">"+categoria.substr(17)+"</button>").click(function(){
+                        var cat = categoria.substr(17);
+                        pintarTotales();
+                        pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_"+cat+"/0/9/WITHSCORES");
+                        cambiarTitulo(cat);
+                    });
+                $("div#botonera").append(boton);
+            });
         });
-        $("#PISOS").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PISOS/0/9/WITHSCORES");
-        });
-        $("#DEPORTES").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_DEPORTES/0/9/WITHSCORES");
-        });
-        $("#EMPLEO").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_EMPLEO/0/9/WITHSCORES");
-        });
-        $("#APUESTAS").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_APUESTAS/0/9/WITHSCORES");
-        });
-        $("#MOTOR").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_MOTOR/0/9/WITHSCORES");
-        });
-        $("#ADMINISTRACION_PUBLICA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_ADMINISTRACION_PUBLICA/0/9/WITHSCORES");
-        });
-        $("#PORNOGRAFIA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PORNOGRAFIA/0/9/WITHSCORES");
-        });
-        $("#EMAIL").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_EMAIL/0/9/WITHSCORES");
-        });
-        $("#REDES_SOCIALES").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_REDES_SOCIALES/0/9/WITHSCORES");
-        });
-        $("#PRENSA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PRENSA/0/9/WITHSCORES");
-        });
-        $("#MUSICA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_MUSICA/0/9/WITHSCORES");
-        });
-        $("#JUEGOS_ONLINE").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_JUEGOS_ONLINE/0/9/WITHSCORES");
-        });
-        $("#PELICULAS_SERIES").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_BANCA/0/9/WITHSCORES");
-        });
-        $("#COMPRAS").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_PELICULAS_SERIES/0/9/WITHSCORES");
-        });
-        $("#INFANTIL").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_INFANTIL/0/9/WITHSCORES");
-        });
-        $("#VIAJES").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_VIAJES/0/9/WITHSCORES");
-        });
-        $("#TECNOLOGIA").click(function(){
-            pintarTotales();
-            pintarTabla("http://127.0.0.1:7379/ZREVRANGE/HEAVYHITTERS_TECNOLOGIA/0/9/WITHSCORES");
+
+
+        $("#btnBusqueda").click(function(){
+            var nombre = $("#textoABuscar").val();
+            pintarDatosUsuario(nombre);
         });
 
         function pintarTabla(url){
@@ -174,7 +120,6 @@
                        
                 for (var i=0; i < resultados.length; i=i+2) {
                     (function(i){
-                        console.log(i);
                         var pos = 1;
                         if(i>=1){
                             pos = 1 +i/2;
@@ -194,27 +139,31 @@
             $("#data").html("");
             $.getJSON("http://127.0.0.1:7379/hgetall/"+usuario,function(json){
                 var data = json.hgetall;
-                $("#data").append("USER"+" ==> "+data["USER"]+"\n");
-                $("#data").append("TOTALHITS"+" ==> "+data["TOTALHITS"]+"\n");
-                $("#data").append("COUNTRY"+" ==> "+data["COUNTRY"]+"\n");
-                $("#data").append("LAST_UPDATE"+" ==> "+data["LAST_UPDATE"]+"\n");
-                $("#data").append("\n");
-                $("#data").append("CATEGORIA\tHITS\tLASTUPDATE"+"\n");
-                for(var key in data){
-                    if(key.indexOf("CAT_")>-1){
-                        var cat = key.substr(4);
-                        
-                        // cosmetica
-                        var printCat = cat;
-                        if(cat.length<8){
-                            printCat = cat+"      ";
-                        }
-                        if(cat.length>15){
-                            printCat = cat.substr(0,12);
-                        }
+                if(! $.isEmptyObject(data)){
+                    $("#data").append("USER"+" ==> "+data["USER"]+"\n");
+                    $("#data").append("TOTALHITS"+" ==> "+data["TOTALHITS"]+"\n");
+                    $("#data").append("COUNTRY"+" ==> "+data["COUNTRY"]+"\n");
+                    $("#data").append("LAST_UPDATE"+" ==> "+data["LAST_UPDATE"]+"\n");
+                    $("#data").append("\n");
+                    $("#data").append("CATEGORIA\tHITS\tLASTUPDATE"+"\n");
+                    for(var key in data){
+                        if(key.indexOf("CAT_")>-1){
+                            var cat = key.substr(4);
+                            
+                            // cosmetica
+                            var printCat = cat;
+                            if(cat.length<8){
+                                printCat = cat+"      ";
+                            }
+                            if(cat.length>15){
+                                printCat = cat.substr(0,12);
+                            }
 
-                        $("#data").append(printCat+"\t"+data[key]+"\t"+data["LAST-UPDATE_"+cat]+"\n");
+                            $("#data").append(printCat+"\t"+data[key]+"\t"+data["LAST-UPDATE_"+cat]+"\n");
+                        }
                     }
+                }else{
+                   $("#data").append("No hay datos para el usuario: "+usuario+"\n"); 
                 }
             });
         }
@@ -223,6 +172,10 @@
             $.getJSON("http://127.0.0.1:7379/GET/TOTALHITS", function(json){
                 $("#totales").html(json.GET);
             });
+        }
+
+        function cambiarTitulo(categoría){
+            $("#tituloDatos").html("Top 10 hitters "+categoría);
         }
         
     </script>
