@@ -34,7 +34,7 @@ object RTDMP {
       System.exit(1)
     }
 
-    // para ejecion local
+    // para ejecucion local
     //val sparkConf = new SparkConf().setMaster("local[8]").setAppName("RTDMP")
 
     val sparkConf = new SparkConf().setAppName("RTDMP")
