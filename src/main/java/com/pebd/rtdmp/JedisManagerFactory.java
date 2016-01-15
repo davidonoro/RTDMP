@@ -15,8 +15,15 @@ public class JedisManagerFactory implements Serializable{
     final static String HOST = "localhost";
     final static int port = 6379;
 
+    /**
+     * Gestiona las conexiones con el servidor
+     */
     static JedisPool pool = new JedisPool(new JedisPoolConfig(),HOST);
 
+    /**
+     * Devuelve un objeto Jedis para insertar los datos en Redis
+     * @return
+     */
     public static Jedis getJedisCluster(){
         return pool.getResource();
     }

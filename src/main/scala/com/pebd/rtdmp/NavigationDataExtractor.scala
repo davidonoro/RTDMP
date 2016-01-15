@@ -11,6 +11,47 @@ object NavigationDataExtractor {
 
   implicit val formats = DefaultFormats
 
+  /**
+    * Case class que define el documento recibido
+    * @param UUIDC
+    * @param _F
+    * @param _GPID
+    * @param _HTM
+    * @param _TW
+    * @param _gcmID
+    * @param _id
+    * @param _lp
+    * @param browser
+    * @param dominio
+    * @param dominio_md5
+    * @param dominio_origen
+    * @param extension_version
+    * @param fecha
+    * @param fecha_insercion
+    * @param fecha_local
+    * @param frame_id
+    * @param gaclient
+    * @param gcmid_md5
+    * @param id_machine
+    * @param id_session
+    * @param idextension
+    * @param idpageview
+    * @param ip
+    * @param pais_iso2
+    * @param parentframe_id
+    * @param partner
+    * @param requestid
+    * @param source
+    * @param tabid
+    * @param timestamp_browser
+    * @param top_id
+    * @param url
+    * @param url_md5
+    * @param url_referer
+    * @param urlorigen
+    * @param user_agent
+    * @param ventana
+    */
   case class event(UUIDC:String,
                    _F:String,
                    _GPID:String,
@@ -52,6 +93,11 @@ object NavigationDataExtractor {
                   )
 
 
+  /**
+    * Parsea un docuemnto y devuelve un objeto Navigation
+    * @param json
+    * @return
+    */
   def parseData(json:String): Navigation = {
     val parsedJson = parse(json)
     try{
@@ -67,6 +113,11 @@ object NavigationDataExtractor {
     }
   }
 
+  /**
+    * Parsea un iterador de documentos en un iterador de Navigation
+    * @param jsonList
+    * @return
+    */
   def parseMultipleData(jsonList: Iterator[(String,String)]): Iterator[Navigation]={
     val navigations = jsonList.map(kfkMsg=>{
       val parsedJson = parse(kfkMsg._2)
@@ -84,6 +135,11 @@ object NavigationDataExtractor {
     navigations
   }
 
+  /**
+    * Helper que cambia el formato de fecha
+    * @param epochMillis
+    * @return
+    */
   def timeToStr(epochMillis: String): String =  {
     DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss").print(java.lang.Long.valueOf(epochMillis)*1000)
   }

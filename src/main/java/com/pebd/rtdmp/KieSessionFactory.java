@@ -22,6 +22,11 @@ public class KieSessionFactory implements Serializable{
     static File rulesFile;
 
 
+    /**
+     * Devuelve una sesion sin estado contra el servidor de drools
+     * @param filename
+     * @return
+     */
     public static StatelessKieSession getKieSession(String filename) {
         File newFile = new File(filename);
         boolean fileHasChanged = (rulesFile == null || rulesFile.lastModified() != newFile.lastModified());

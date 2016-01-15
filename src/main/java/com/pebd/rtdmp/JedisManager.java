@@ -13,8 +13,15 @@ import java.util.List;
 public class JedisManager implements Serializable{
 
 
+    /**
+     * Maximo de posiciones en los sorted sets
+     */
     private static final int TOPKHITTERS = -101;
 
+    /**
+     * Inserta todos los datos de navegacion en Redis
+     * @param data
+     */
     public void insertData(Navigation data){
         try{
             Jedis cluster = JedisManagerFactory.getJedisCluster();
@@ -27,6 +34,7 @@ public class JedisManager implements Serializable{
             }
 
 
+            // Contador de usuarios unicos
             if(nuevoUsuario){
                 cluster.incrBy("TOTALUNIQUE",1);
                 if(data.getPais() != "") {

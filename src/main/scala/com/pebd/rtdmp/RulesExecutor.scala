@@ -5,6 +5,11 @@ package com.pebd.rtdmp
   */
 class RulesExecutor(rulesFile:String) extends Serializable{
 
+  /**
+    * EValua una regla de negocio para una navegacion
+    * @param data
+    * @return
+    */
   def evaluarReglas(data:Navigation):Navigation={
     val ksession = KieSessionFactory.getKieSession(rulesFile)
     //val list = List(String)
@@ -13,6 +18,11 @@ class RulesExecutor(rulesFile:String) extends Serializable{
     data
   }
 
+  /**
+    * Evalua reglas de negocio en un conjunto de objetos
+    * @param data
+    * @return
+    */
   def evaluarMultipleReglas(data:Iterator[Navigation]):Iterator[Navigation]={
     val ksession = KieSessionFactory.getKieSession(rulesFile)
 
