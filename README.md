@@ -11,3 +11,5 @@ Parametros de ejecucion:
 * Hoja de reglas de negocio
 
 Se adjuntan 2 cuadros de mando para explotar la informacion de los usuarios
+
+[Video explicativo del proyecto](https://www.youtube.com/watch?v=T-nOoRAjmjc)
